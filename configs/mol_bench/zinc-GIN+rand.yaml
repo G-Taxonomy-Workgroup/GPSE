@@ -1,0 +1,55 @@
+---
+name_tag: GIN+rand
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+wandb:
+  use: false
+  project: GPSE-ZINC
+dataset:
+  format: PyG-ZINC
+  name: subset
+  task: graph
+  task_type: regression
+  transductive: false
+  node_encoder: true
+  node_encoder_name: TypeDictNode+NormalRE
+  node_encoder_num_types: 28
+  node_encoder_bn: false
+  edge_encoder: false
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_encoder_bn: false
+posenc_NormalRE:
+  enable: true
+  dim_pe: 32
+train:
+  mode: custom
+  batch_size: 128
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: l1
+  graph_pooling: add
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 16
+  layers_post_mp: 1
+  dim_inner: 124
+  batchnorm: true
+  layer_type: ginconv
+  act: relu
+  dropout: 0.0
+  agg: add
+  stage_type: skipsum
+optim:
+  clip_grad_norm: true
+  optimizer: adam
+  weight_decay: 1e-5
+  base_lr: 0.001
+  min_lr: 1e-5
+  max_epoch: 1000
+  scheduler: reduce_on_plateau
+  schedule_patience: 10
+  reduce_factor: 0.5

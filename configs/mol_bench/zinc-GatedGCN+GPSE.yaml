@@ -1,0 +1,78 @@
+---
+name_tag: GatedGCN+GPSE
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+wandb:
+  use: false
+  project: GPSE-ZINC
+dataset:
+  format: PyG-ZINC
+  name: subset
+  task: graph
+  task_type: regression
+  transductive: false
+  node_encoder: true
+  node_encoder_name: TypeDictNode+GPSE
+  node_encoder_num_types: 28
+  node_encoder_bn: false
+  edge_encoder: false
+  edge_encoder_name: TypeDictEdge
+  edge_encoder_num_types: 4
+  edge_encoder_bn: false
+posenc_GPSE:
+  enable: true
+  rand_type: NormalSE
+  model_dir: pretrained_models/gpse_molpcba.pt
+  dim_pe: 32
+  use_repr: true
+  repr_type: no_post_mp
+  model: mlp
+  layers: 2
+  virtual_node: true
+  input_dropout_be: 0.5
+  input_dropout_ae: 0.0
+  raw_norm_type: BatchNorm
+  gnn_cfg:
+    head: inductive_hybrid_multi
+    layers_pre_mp: 1
+    layers_mp: 20
+    layers_post_mp: 2
+    dim_inner: 512
+    layer_type: resgatedgcnconv
+    multi_head_dim_inner: 32  # use dim_inner if None
+    stage_type: skipsum
+    batchnorm: true
+    act: relu
+    dropout: 0.2
+    agg: mean
+    normalize_adj: false
+train:
+  mode: custom
+  batch_size: 128
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: l1
+  graph_pooling: add
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 16
+  layers_post_mp: 1
+  dim_inner: 78
+  batchnorm: true
+  layer_type: resgatedgcnconv
+  act: relu
+  dropout: 0.0
+  stage_type: skipsum
+optim:
+  clip_grad_norm: true
+  optimizer: adam
+  weight_decay: 1e-5
+  base_lr: 0.001
+  min_lr: 1e-5
+  max_epoch: 1000
+  scheduler: reduce_on_plateau
+  schedule_patience: 10
+  reduce_factor: 0.5

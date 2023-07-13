@@ -1,0 +1,23 @@
+#!/bin/bash --login
+#SBATCH -N 1
+#SBATCH -c 4
+#SBATCH -t 3:55:00
+#SBATCH --mem=16GB
+#SBATCH -A cmse
+#SBATCH --gres=gpu:v100:1
+
+date
+hostname
+pwd
+
+conda activate graphgps
+
+cd $SLURM_SUBMIT_DIR
+pwd
+
+echo $@
+eval $@
+
+
+echo "All done in sbatch."
+date

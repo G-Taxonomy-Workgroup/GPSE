@@ -1,0 +1,54 @@
+---
+out_dir: results
+metric_best: accuracy
+run_multiple_splits: [0, 1, 2, 3, 4]
+wandb:
+  use: false
+  project: GPSE-CSL
+dataset:
+  format: PyG-GNNBenchmarkDataset
+  name: CSL
+  task: graph
+  task_type: classification
+  transductive: false
+  split_mode: cv-stratifiedkfold-5
+  split_dir: splits
+  node_encoder: true
+  node_encoder_name: RWSE
+posenc_RWSE:
+  enable: false
+  kernel:
+    times_func: range(2,22)  # if no self-loop, then RWSE1 will be all zeros
+  model: Linear
+  dim_pe: 128
+  raw_norm_type: BatchNorm
+train:
+  mode: custom
+  batch_size: 128
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: cross_entropy
+  edge_decoding: dot
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 0
+  layers_mp: 5
+  layers_post_mp: 1
+  dim_inner: 128
+  layer_type: ginconv
+  stage_type: skipsum
+  batchnorm: true
+  act: relu
+  dropout: 0.0
+  agg: add
+  normalize_adj: false
+optim:
+  optimizer: adam
+  base_lr: 0.002
+  max_epoch: 200
+  scheduler: reduce_on_plateau
+  reduce_factor: 0.5
+  schedule_patience: 20
+  min_lr: 1e-5
