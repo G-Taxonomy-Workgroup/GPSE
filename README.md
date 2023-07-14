@@ -1,3 +1,7 @@
+# GPSE: Graph Positional and Structural Encoder
+
+![img](GPSE.png)
+
 ## Installation
 
 This codebase is built on top of
