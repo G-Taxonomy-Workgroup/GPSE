@@ -89,5 +89,5 @@ To compare with identical input features (e.g. 1), we return a `np.ones` array o
 Running the code below with and without the changes described above will result in two `.pt` files of the embeddings.
 The code and further instructions to generate the visualizations are found in `viz/wl_viz.ipynb`.
 ```
-python viz/wl_test.py --cfg experiments/wl_bench/toywl-GPS+GPSE_v9.yaml
+python viz/wl_test.py --cfg configs/wl_bench/toywl-GPS+GPSE_v9.yaml
 ```
