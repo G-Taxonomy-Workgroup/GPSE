@@ -29,12 +29,12 @@ pip install -r requirements.txt
 conda clean --all -y
 ```
 
-
 ## Quick start
 
-### Downlad the pre-trained GPSE model or pre-train it from scratch
+### Download the pre-trained GPSE model or pre-train it from scratch
 
-The pre-trained GPSE encoder can be downloaded from Zenodo using wget:
+The pre-trained GPSE encoder can be downloaded from Zenodo 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8145344.svg)](https://doi.org/10.5281/zenodo.8145344)
 
 ```bash
 # Pre-trained on MolPCBA (default)
