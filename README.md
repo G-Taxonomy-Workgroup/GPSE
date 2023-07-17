@@ -1,5 +1,7 @@
 # GPSE: Graph Positional and Structural Encoder
 
+[![arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)]()
+
 ![img](GPSE.png)
 
 ## Installation
@@ -90,4 +92,19 @@ Running the code below with and without the changes described above will result 
 The code and further instructions to generate the visualizations are found in `viz/wl_viz.ipynb`.
 ```
 python viz/wl_test.py --cfg configs/wl_bench/toywl-GPS+GPSE_v9.yaml
+```
+
+## Citation
+
+If you find this work useful, please cite our paper
+
+```bibtex
+@misc{liu2023graph,
+      title={Graph Positional and Structural Encoder}, 
+      author={Renming Liu and Semih Cantürk and Olivier Lapointe-Gagné and Vincent Létourneau and Guy Wolf and Dominique Beaini and Ladislav Rampášek},
+      year={2023},
+      eprint={2307.07107},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
 ```
