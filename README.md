@@ -1,6 +1,6 @@
 # GPSE: Graph Positional and Structural Encoder
 
-[![arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)]()
+[![arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)](https://arxiv.org/abs/2307.07107)
 
 ![img](GPSE.png)
 
