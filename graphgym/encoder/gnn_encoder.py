@@ -43,6 +43,15 @@ def gpse_process_batch(model, batch) -> Tuple[torch.Tensor, torch.Tensor]:
         raise ValueError(f"Unknown {rand_type=!r}")
     batch.x = torch.from_numpy(rand.astype("float32"))
 
+    if cfg.posenc_GPSE.virtual_node:
+        # HACK: We need to reset virtual node features to zeros to match the
+        # pretraining setting (virtual node applied after random node features
+        # are set, and the default node features for the virtual node are all
+        # zeros). Can potentially test if initializing virtual node features to
+        # random features is better than setting them to zeros.
+        for i in batch.ptr[1:]:
+            batch.x[i - 1] = 0
+
     # Generate encodings using the pretrained encoder
     device = get_device(cfg.posenc_GPSE.accelerator, cfg.accelerator)
     if cfg.posenc_GPSE.loader.type == "neighbor":
