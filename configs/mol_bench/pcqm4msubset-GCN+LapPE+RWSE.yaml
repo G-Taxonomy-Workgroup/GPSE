@@ -1,0 +1,69 @@
+---
+name_tag: GCN+LapPE+RWSE
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+wandb:
+  use: false
+  project: GPSE-PCQM4Mv2-subset
+dataset:
+  format: OGB
+  name: PCQM4Mv2-subset
+  task: graph
+  task_type: regression
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+CombinedPSE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+  output_node_encoders: LapPE+RWSE
+  output_graph_encoders: none
+  combine_output_pestat: true
+posenc_CombinedPSE:
+  enable: true
+  dim_pe: 128
+  model: Linear
+  raw_norm_type: BatchNorm
+posenc_LapPE:
+  enable: true
+  eigen:
+    laplacian_norm: sym
+    eigvec_norm: L2
+    max_freqs: 4
+    skip_zero_freq: true
+    eigvec_abs: true
+posenc_RWSE:
+  enable: true
+  kernel:
+    times_func: range(2,22)  # if no self-loop, then RWSE1 will be all zeros
+train:
+  mode: custom
+  batch_size: 256
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: l1
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 16
+  layers_post_mp: 1
+  dim_inner: 172
+  batchnorm: true
+  layer_type: gcnconv
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: false
+  stage_type: skipsum
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 1e-6
+  base_lr: 0.0002
+  max_epoch: 100
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

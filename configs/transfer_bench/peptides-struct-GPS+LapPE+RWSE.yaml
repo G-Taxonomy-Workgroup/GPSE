@@ -1,0 +1,74 @@
+---
+name_tag: GPS+LapPE+RWSE
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+wandb:
+  use: false
+  project: GPSE-peptides-struct
+dataset:
+  format: OGB
+  name: peptides-structural
+  task: graph
+  task_type: regression
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+CombinedPSE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+  output_node_encoders: LapPE+RWSE
+  output_graph_encoders: none
+  combine_output_pestat: true
+posenc_CombinedPSE:
+  enable: true
+  dim_pe: 8
+  model: Linear
+  raw_norm_type: BatchNorm
+posenc_LapPE:
+  enable: true
+  eigen:
+    laplacian_norm: sym
+    eigvec_norm: L2
+    max_freqs: 4
+    skip_zero_freq: true
+    eigvec_abs: true
+posenc_RWSE:
+  enable: true
+  kernel:
+    times_func: range(2,22)  # if no self-loop, then RWSE1 will be all zeros
+train:
+  mode: custom
+  batch_size: 128
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: GPSModel
+  loss_fun: l1
+  graph_pooling: mean
+gt:
+  layer_type: CustomGatedGCN+Transformer
+  layers: 4
+  n_heads: 4
+  dim_hidden: 96  # `gt.dim_hidden` must match `gnn.dim_inner`
+  dropout: 0.0
+  attn_dropout: 0.5
+  layer_norm: false
+  batch_norm: true
+gnn:
+  head: default
+  layers_pre_mp: 0
+  layers_post_mp: 1  # Not used when `gnn.head: san_graph`
+  dim_inner: 96  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: true
+  act: relu
+  dropout: 0.0
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 1e-4
+  base_lr: 0.0005
+  max_epoch: 200
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 10

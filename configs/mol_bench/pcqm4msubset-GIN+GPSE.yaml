@@ -1,0 +1,75 @@
+---
+name_tag: GIN+GPSE
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+wandb:
+  use: false
+  project: GPSE-PCQM4Mv2-subset
+dataset:
+  format: OGB
+  name: PCQM4Mv2-subset
+  task: graph
+  task_type: regression
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+GPSE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+posenc_GPSE:
+  enable: true
+  rand_type: NormalSE
+  model_dir: pretrained_models/gpse_molpcba.pt
+  dim_pe: 128
+  use_repr: true
+  repr_type: no_post_mp
+  model: mlp
+  layers: 2
+  virtual_node: true
+  input_dropout_be: 0.5
+  input_dropout_ae: 0.2
+  raw_norm_type: BatchNorm
+  gnn_cfg:
+    head: inductive_hybrid_multi
+    layers_pre_mp: 1
+    layers_mp: 20
+    layers_post_mp: 2
+    dim_inner: 512
+    layer_type: resgatedgcnconv
+    multi_head_dim_inner: 32  # use dim_inner if None
+    stage_type: skipsum
+    batchnorm: true
+    act: relu
+    dropout: 0.2
+    agg: mean
+    normalize_adj: false
+train:
+  mode: custom
+  batch_size: 256
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: l1
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 16
+  layers_post_mp: 1
+  dim_inner: 124
+  batchnorm: true
+  layer_type: ginconv
+  act: relu
+  dropout: 0.0
+  agg: add
+  stage_type: skipsum
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 1e-6
+  base_lr: 0.0002
+  max_epoch: 100
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

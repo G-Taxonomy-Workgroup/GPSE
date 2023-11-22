@@ -1,0 +1,88 @@
+---
+name_tag: GPS+GPSE
+out_dir: results
+metric_best: accuracy
+wandb:
+  use: false
+  project: GPSE-arxiv
+dataset:
+  format: OGB
+  name: ogbn-arxiv
+  task: node
+  task_type: classification
+  transductive: true
+  node_encoder: true
+  node_encoder_name: GPSE
+posenc_GPSE:
+  enable: true
+  rand_type: NormalSE
+  model_dir: pretrained_models/gpse_molpcba.pt
+  dim_pe: 32
+  use_repr: true
+  repr_type: no_post_mp
+  model: mlp
+  layers: 2
+  virtual_node: true
+  input_dropout_be: 0.5
+  input_dropout_ae: 0.2
+  raw_norm_type: none
+  gnn_cfg:
+    head: inductive_hybrid_multi
+    layers_pre_mp: 1
+    layers_mp: 20
+    layers_post_mp: 2
+    dim_inner: 512
+    layer_type: resgatedgcnconv
+    multi_head_dim_inner: 32  # use dim_inner if None
+    stage_type: skipsum
+    batchnorm: true
+    act: relu
+    dropout: 0.2
+    agg: mean
+    normalize_adj: false
+train:
+  mode: custom
+  batch_size: 32
+  eval_period: 1
+  ckpt_period: 100
+  sampler: neighbor
+  neighbor_sizes:
+    - 32
+    - 24
+    - 16
+    - 8
+    - 4
+    - 4
+    - 4
+val:
+  sampler: neighbor
+model:
+  type: GPSModel
+  loss_fun: cross_entropy
+gt:
+  layer_type: GIN+Transformer  # CustomGatedGCN+Performer
+  layers: 3
+  n_heads: 4
+  dim_hidden: 256  # `gt.dim_hidden` must match `gnn.dim_inner`
+  dropout: 0.5
+  attn_dropout: 0.2
+  layer_norm: false
+  batch_norm: true
+gnn:
+  head: node
+  layers_pre_mp: 1
+  layers_post_mp: 1
+  dim_inner: 256  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: true
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: false
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 1e-5
+  base_lr: 0.0001
+  max_epoch: 50
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

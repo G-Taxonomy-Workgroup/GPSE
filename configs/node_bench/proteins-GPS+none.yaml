@@ -1,0 +1,64 @@
+---
+name_tag: GPS+none
+out_dir: results
+metric_best: auc
+wandb:
+  use: false
+  project: GPSE-proteins
+dataset:
+  format: OGB
+  name: ogbn-proteins
+  task: node
+  task_type: classification_multilabel
+  transductive: true
+  node_encoder: false
+  edge_encoder: true
+  edge_encoder_name: LinearEdge
+  edge_dim: 8
+  edge_encoder_bn: false
+train:
+  mode: custom
+  sampler: neighbor
+  neighbor_sizes:
+    - 32
+    - 24
+    - 16
+    - 8
+    - 4
+    - 4
+  batch_size: 16
+  eval_period: 1
+  ckpt_period: 10
+val:
+  sampler: neighbor
+  accelerator: cpu  # prevent GPU OOM during evaluation
+model:
+  type: GPSModel
+  loss_fun: cross_entropy
+gt:
+  layer_type: GINE+Transformer  # CustomGatedGCN+Performer
+  layers: 3
+  n_heads: 4
+  dim_hidden: 256  # `gt.dim_hidden` must match `gnn.dim_inner`
+  dropout: 0.0
+  attn_dropout: 0.2
+  layer_norm: false
+  batch_norm: true
+gnn:
+  head: node
+  layers_pre_mp: 1
+  layers_post_mp: 1
+  dim_inner: 256  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: true
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: false
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 0.0
+  base_lr: 0.001
+  max_epoch: 30
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 4
