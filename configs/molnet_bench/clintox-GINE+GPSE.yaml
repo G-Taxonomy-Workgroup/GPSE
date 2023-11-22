@@ -1,0 +1,75 @@
+---
+name_tag: GINE+GPSE
+out_dir: results
+metric_best: auc
+wandb:
+  use: false
+  project: GPSE-MoleculeNet
+dataset:
+  format: OGB
+  name: ogbg-molclintox
+  task: graph
+  task_type: multilabel
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+GPSE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+  edge_dim: 300
+posenc_GPSE:
+  enable: true
+  rand_type: NormalSE
+  model_dir: pretrained_models/gpse_molpcba.pt
+  dim_pe: 64
+  use_repr: true
+  repr_type: no_post_mp
+  model: Linear
+  virtual_node: true
+  input_dropout_be: 0.25
+  input_dropout_ae: 0.001
+  raw_norm_type: none
+  gnn_cfg:
+    head: inductive_hybrid_multi
+    layers_pre_mp: 1
+    layers_mp: 20
+    layers_post_mp: 2
+    dim_inner: 512
+    layer_type: resgatedgcnconv
+    multi_head_dim_inner: 32  # use dim_inner if None
+    stage_type: skipsum
+    batchnorm: true
+    act: relu
+    dropout: 0.2
+    agg: mean
+    normalize_adj: false
+train:
+  mode: custom
+  batch_size: 32
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: cross_entropy
+  edge_decoding: dot
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 0
+  layers_mp: 5
+  layers_post_mp: 1
+  dim_inner: 300
+  layer_type: gine2conv
+  stage_type: skipsum
+  batchnorm: true
+  act: relu
+  dropout: 0.1
+  agg: mean
+  normalize_adj: false
+optim:
+  base_lr: 0.001
+  max_epoch: 100
+  optimizer: adamW
+  weight_decay: 0.5
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

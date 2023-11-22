@@ -1,0 +1,56 @@
+---
+name_tag: GINE+RWSE
+out_dir: results
+metric_best: auc
+wandb:
+  use: false
+  project: GPSE-MoleculeNet
+dataset:
+  format: OGB
+  name: ogbg-molhiv
+  task: graph
+  task_type: classification
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+RWSE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+  edge_dim: 300
+posenc_RWSE:
+  enable: true
+  kernel:
+    times_func: range(1,17)
+  model: Linear
+  dim_pe: 16
+  raw_norm_type: BatchNorm
+train:
+  mode: custom
+  batch_size: 32
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: cross_entropy
+  edge_decoding: dot
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 0
+  layers_mp: 5
+  layers_post_mp: 1
+  dim_inner: 300
+  layer_type: gine2conv
+  stage_type: skipsum
+  batchnorm: true
+  act: relu
+  dropout: 0.2
+  agg: mean
+  normalize_adj: false
+optim:
+  base_lr: 0.001
+  max_epoch: 100
+  optimizer: adamW
+  weight_decay: 0.001
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5
