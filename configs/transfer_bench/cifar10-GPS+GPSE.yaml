@@ -1,4 +1,5 @@
 ---
+name_tag: GPS+GPSE
 out_dir: results
 metric_best: accuracy
 wandb:

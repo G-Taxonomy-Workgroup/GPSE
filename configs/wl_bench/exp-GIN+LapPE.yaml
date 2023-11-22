@@ -1,4 +1,5 @@
 ---
+name_tag: GIN+LapPE
 out_dir: results
 metric_best: accuracy
 run_multiple_splits: [0, 1, 2, 3, 4]

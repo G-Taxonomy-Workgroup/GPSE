@@ -4,7 +4,7 @@ metric_best: mae
 metric_agg: argmin
 wandb:
   use: false
-  project: PPE-ToyWL
+  project: GPSE-ToyWL
 dataset:
   format: ToyWL
   name: pent_hex
