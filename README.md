@@ -94,6 +94,10 @@ The code and further instructions to generate the visualizations are found in `v
 python viz/wl_test.py --cfg configs/wl_bench/toywl-GPS+GPSE_v9.yaml
 ```
 
+## Known issues
+
+- Incompatibility with PyG 2.4.0 due to a minor bug in the GraphGym MLP construction (see https://github.com/G-Taxonomy-Workgroup/GPSE/issues/1 and https://github.com/pyg-team/pytorch_geometric/issues/8484).
+
 ## Citation
 
 If you find this work useful, please cite our paper
