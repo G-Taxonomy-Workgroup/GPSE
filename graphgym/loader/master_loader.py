@@ -33,6 +33,7 @@ from graphgym.head.identity import IdentityHead
 from graphgym.loader.dataset.aqsol_molecules import AQSOL
 from graphgym.loader.dataset.coco_superpixels import COCOSuperpixels
 from graphgym.loader.dataset.er_dataset import ERDataset
+from graphgym.loader.dataset.spectre import SPECTREDataset
 from graphgym.loader.dataset.malnet_tiny import MalNetTiny
 from graphgym.loader.dataset.open_mol_graph import OpenMolGraph
 from graphgym.loader.dataset.synthetic_wl import SyntheticWL
@@ -46,6 +47,8 @@ from graphgym.transform.transforms import (VirtualNodePatchSingleton,
                                            pre_transform_in_memory, typecast_x)
 from graphgym.utils import get_device
 from graphgym.wl_dataset import ToyWLDataset
+
+import networkx as nx
 
 
 def log_loaded_dataset(dataset, format, name):
@@ -256,11 +259,22 @@ def load_dataset_master(format, name, dataset_dir):
             raise ValueError(f"Unexpected PyG Dataset identifier: {format}")
 
     elif format == 'er':
-        def set_y(data):
+        def set_xy(data):
+            data.x = torch.ones(data.num_nodes, 1)
             data.y = 1
             return data
         dataset = ERDataset(osp.join(dataset_dir, 'er'))
-        pre_transform_in_memory(dataset, set_y, show_progress=True)
+        pre_transform_in_memory(dataset, set_xy, show_progress=True)
+
+    elif format == 'SPECTRE':
+        dataset_dir = osp.join(dataset_dir, 'SPECTRE')
+        def set_xy(data):
+            data.x = torch.ones(data.num_nodes, 1)
+            data.y = 1
+            return data
+        dataset = SPECTREDataset(dataset_dir, name)
+        pre_transform_in_memory(dataset, set_xy, show_progress=True)
+
 
     # GraphGym default loader for Pytorch Geometric datasets
     elif format == 'PyG':

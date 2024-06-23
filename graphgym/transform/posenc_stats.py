@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import List
 
 import numpy as np
+import scipy
 import torch
 import torch.nn.functional as F
 from torch_geometric.utils import (get_laplacian, to_scipy_sparse_matrix,
@@ -177,7 +178,10 @@ def compute_posenc_stats(data, pe_types, is_undirected, cfg):
             *get_laplacian(undir_edge_index, normalization=laplacian_norm_type,
                            num_nodes=N)
         )
-        evals, evects = np.linalg.eigh(L.toarray())
+        if cfg.dataset.name.startswith("ogbn"):
+            evals, evects = scipy.sparse.linalg.eigsh(L, k=cfg.posenc_LapPE.eigen.max_freqs, which='SM')
+        else:
+            evals, evects = np.linalg.eigh(L.toarray())
 
         if 'LapPE' in pe_types:
             max_freqs = cfg.posenc_LapPE.eigen.max_freqs
@@ -303,7 +307,7 @@ def get_lap_decomp_stats(evals, evects, max_freqs, eigvec_norm='L2',
         Tensor (num_nodes, max_freqs, 1) eigenvalues repeated for each node
         Tensor (num_nodes, max_freqs) of eigenvector values per node
     """
-    N = len(evals)  # Number of nodes, including disconnected nodes.
+    N = evects.shape[0]  # Number of nodes, including disconnected nodes.
 
     # Keep up to the maximum desired number of frequencies.
     offset = (abs(evals) < EPS).sum().clip(0, N) if skip_zero_freq else 0
