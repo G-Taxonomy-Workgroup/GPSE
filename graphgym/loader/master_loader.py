@@ -1130,7 +1130,7 @@ def get_unique_mol_graphs_via_smiles(
     old_size = len(dataset)
     all_smiles = []
     for i in tqdm(dataset, total=old_size,
-                  desc="Extracting unique graphs (ignoring atom/bond types)"):
+                  desc="Extracting unique SMILES (ignoring atom/bond types)"):
         num_nodes = i.num_nodes
         trivial_c_atoms = ["C"] * num_nodes
         adj = torch.sparse_coo_tensor(
@@ -1142,7 +1142,8 @@ def get_unique_mol_graphs_via_smiles(
     unique_smiles = sorted(set(all_smiles))
 
     unique_graphs = []
-    for smiles in unique_smiles:
+    for smiles in tqdm(unique_smiles, total=len(unique_smiles),
+                  desc="Filtering unique graphs based on SMILES"):
         g = from_smiles(smiles)
         if (g.num_nodes > 1) and (g.edge_index.shape[1] > 1):
             delattr(g, "smiles")
