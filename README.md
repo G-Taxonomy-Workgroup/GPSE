@@ -1,7 +1,5 @@
 # GPSE: Graph Positional and Structural Encoder
 
----
-
 #### [Semih Cantürk*](https://semihcanturk.github.io), [Renming Liu*](https://github.com/RemyLau), Olivier Lapointe-Gagné, Vincent Létourneau, Guy Wolf, Dominique Beaini, Ladislav Rampášek
 
 _Accepted at ICML 2024_
