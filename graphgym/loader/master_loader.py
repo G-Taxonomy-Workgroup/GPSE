@@ -32,6 +32,7 @@ from graphgym.encoder.gnn_encoder import gpse_process_batch
 from graphgym.head.identity import IdentityHead
 from graphgym.loader.dataset.aqsol_molecules import AQSOL
 from graphgym.loader.dataset.coco_superpixels import COCOSuperpixels
+from graphgym.loader.dataset.er_dataset import ERDataset
 from graphgym.loader.dataset.malnet_tiny import MalNetTiny
 from graphgym.loader.dataset.open_mol_graph import OpenMolGraph
 from graphgym.loader.dataset.synthetic_wl import SyntheticWL
@@ -253,6 +254,13 @@ def load_dataset_master(format, name, dataset_dir):
 
         else:
             raise ValueError(f"Unexpected PyG Dataset identifier: {format}")
+
+    elif format == 'er':
+        def set_y(data):
+            data.y = 1
+            return data
+        dataset = ERDataset(osp.join(dataset_dir, 'er'))
+        pre_transform_in_memory(dataset, set_y, show_progress=True)
 
     # GraphGym default loader for Pytorch Geometric datasets
     elif format == 'PyG':

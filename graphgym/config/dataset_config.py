@@ -1,3 +1,4 @@
+from yacs.config import CfgNode as CN
 from torch_geometric.graphgym.register import register_config
 
 
@@ -32,3 +33,17 @@ def dataset_cfg(cfg):
     cfg.dataset.umg_val_ratio = 0.1
     cfg.dataset.umg_test_ratio = 0.1
     cfg.dataset.umg_random_seed = 0  # for random indexing
+    cfg.dataset.subset_ratio = 1.
+
+
+@register_config('er_cfg')
+def er_cfg(cfg):
+    """Configuration options for nx datasets.
+    """
+    cfg.er = CN()
+    # features can be one of ['node_const', 'node_onehot', 'node_clustering_coefficient', 'node_pagerank']
+    cfg.er.num_samples = 1000
+    cfg.er.n_min = 10
+    cfg.er.n_max = 10
+    cfg.er.p = 0.4
+    cfg.er.supp_mtx = ["edge_index"]
