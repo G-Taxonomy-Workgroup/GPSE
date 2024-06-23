@@ -23,7 +23,7 @@ dataset:
   combine_output_pestat: true
 posenc_CombinedPSE:
   enable: true
-  dim_pe: 128
+  dim_pe: 48
   model: Linear
   raw_norm_type: BatchNorm
 posenc_LapPE:

@@ -18,7 +18,6 @@ dataset:
   edge_encoder: true
   edge_encoder_name: Bond
   edge_encoder_bn: false
-virtual_node: false
 posenc_GPSE:
   enable: true
   rand_type: NormalSE

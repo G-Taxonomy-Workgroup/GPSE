@@ -61,7 +61,7 @@ gnn:
   layers_pre_mp: 1
   layers_mp: 16
   layers_post_mp: 1
-  dim_inner: 78
+  dim_inner: 172
   batchnorm: true
   layer_type: resgatedgcnconv
   act: relu

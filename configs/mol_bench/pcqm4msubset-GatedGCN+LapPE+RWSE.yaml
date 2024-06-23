@@ -23,7 +23,7 @@ dataset:
   combine_output_pestat: true
 posenc_CombinedPSE:
   enable: true
-  dim_pe: 128
+  dim_pe: 48
   model: Linear
   raw_norm_type: BatchNorm
 posenc_LapPE:
@@ -51,7 +51,7 @@ gnn:
   layers_pre_mp: 1
   layers_mp: 16
   layers_post_mp: 1
-  dim_inner: 78
+  dim_inner: 124
   batchnorm: true
   layer_type: resgatedgcnconv
   act: relu
