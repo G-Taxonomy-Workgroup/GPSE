@@ -1,0 +1,55 @@
+---
+name_tag: GCN+RWSE
+out_dir: results
+metric_best: ap
+wandb:
+  use: false
+  project: GPSE-peptides-func
+dataset:
+  format: OGB
+  name: peptides-functional
+  task: graph
+  task_type: classification_multilabel
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+RWSE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+posenc_RWSE:
+  enable: true
+  kernel:
+    times_func: range(2,22)  # if no self-loop, then RWSE1 will be all zeros
+  model: Linear
+  dim_pe: 32
+  raw_norm_type: BatchNorm
+train:
+  mode: custom
+  batch_size: 256
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: cross_entropy
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 6
+  layers_post_mp: 3
+  dim_inner: 235
+  batchnorm: false
+  layer_type: gcnconv
+  act: relu
+  dropout: 0.1
+  agg: mean
+  normalize_adj: false
+  stage_type: skipsum
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 0.0
+  base_lr: 0.001
+  max_epoch: 250
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

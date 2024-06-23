@@ -1,0 +1,59 @@
+---
+name_tag: GCN+LapPE
+out_dir: results
+metric_best: mae
+metric_agg: argmin
+wandb:
+  use: false
+  project: GPSE-peptides-struct
+dataset:
+  format: OGB
+  name: peptides-structural
+  task: graph
+  task_type: regression
+  transductive: false
+  node_encoder: true
+  node_encoder_name: Atom+LapPE
+  node_encoder_bn: false
+  edge_encoder: true
+  edge_encoder_name: Bond
+  edge_encoder_bn: false
+posenc_LapPE:
+  enable: true
+  eigen:
+    laplacian_norm: none
+    eigvec_norm: L2
+    max_freqs: 8
+  model: DeepSet
+  dim_pe: 8
+  layers: 2
+  raw_norm_type: none
+train:
+  mode: custom
+  batch_size: 256
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: gnn
+  loss_fun: l1
+  graph_pooling: mean
+gnn:
+  layers_pre_mp: 1
+  layers_mp: 6
+  layers_post_mp: 3
+  dim_inner: 235
+  batchnorm: false
+  layer_type: gcnconv
+  act: relu
+  dropout: 0.1
+  agg: mean
+  normalize_adj: false
+  stage_type: skipsum
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 0.0
+  base_lr: 0.001
+  max_epoch: 250
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5
