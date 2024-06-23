@@ -42,6 +42,15 @@ posenc_HKdiagSE:
   enable: true
   kernel:
     times_func: range(1,21)
+posenc_SignNet:
+  enable: false
+  dim_pe: 16
+  eigen:
+    eigvec_abs: false
+    eigvec_norm: L2
+    laplacian_norm: sym
+    max_freqs: 20
+    skip_zero_freq: true
 randenc_NormalSE:
   enable: true
   dim_pe: 20

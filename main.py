@@ -2,15 +2,15 @@ import datetime
 import os
 import torch
 import logging
+import uuid
 
 import graphgym  # noqa, register custom modules
 from graphgym.agg_runs import agg_runs
 from graphgym.optimizer.extra_optimizers import ExtendedSchedulerConfig
 
 from torch_geometric.graphgym.cmd_args import parse_args
-from torch_geometric.graphgym.config import (cfg, dump_cfg,
-                                             set_cfg, load_cfg,
-                                             makedirs_rm_exist)
+from torch_geometric.graphgym.config import (cfg, dump_cfg, makedirs_rm_exist,
+                                             set_cfg)
 from torch_geometric.graphgym.logger import set_printing
 from torch_geometric.graphgym.optim import create_optimizer, \
     create_scheduler, OptimizerConfig
@@ -24,7 +24,7 @@ from torch_geometric import seed_everything
 from graphgym.finetuning import load_pretrained_model_cfg, \
     init_model_from_pretrained, init_model_from_pretrained_exact
 from graphgym.logger import create_logger
-from graphgym.patches import create_loader
+from graphgym.patches import create_loader, load_cfg
 
 
 torch.backends.cuda.matmul.allow_tf32 = True  # Default False in PyTorch 1.12+
@@ -56,9 +56,12 @@ def custom_set_out_dir(cfg, cfg_fname, name_tag):
         cfg (CfgNode): Configuration node
         cfg_fname (string): Filename for the yaml format configuration file
         name_tag (string): Additional name tag to identify this execution of the
-            configuration file, specified in :obj:`cfg.name_tag`
+            configuration file, specified in :obj:`cfg.name_tag`. If it is set
+            to a special tag "_rand_", then set to a randomly generated UUID.
     """
     run_name = os.path.splitext(os.path.basename(cfg_fname))[0]
+    if name_tag == "_rand_":
+        name_tag = uuid.uuid4()
     run_name += f"-{name_tag}" if name_tag else ""
     cfg.out_dir = os.path.join(cfg.out_dir, run_name)
 

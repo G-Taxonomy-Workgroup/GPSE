@@ -261,6 +261,7 @@ def load_dataset_master(format, name, dataset_dir):
     elif format == 'OGB':
         if name.startswith('ogbg'):
             dataset = preformat_OGB_Graph(dataset_dir, name.replace('_', '-'))
+            dataset = dataset.index_select(range(int(len(dataset)*cfg.dataset.subset_ratio)))
 
         elif name.startswith('ogbn'):
             dataset = preformat_OGB_Node(dataset_dir, name.replace('_', '-'))
@@ -318,7 +319,7 @@ def load_dataset_master(format, name, dataset_dir):
     pe_enabled_list = []
     for key, pecfg in cfg.items():
         if (key.startswith(('posenc_', 'graphenc_')) and pecfg.enable
-                and key != "GPSE"):  # GPSE handeled separately
+                and key != "posenc_GPSE"):  # GPSE handled separately
             pe_name = key.split('_', 1)[1]
             pe_enabled_list.append(pe_name)
             if hasattr(pecfg, 'kernel'):

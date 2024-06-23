@@ -1,4 +1,4 @@
-from torch_geometric.graphgym.config import cfg
+from torch_geometric.graphgym.config import assert_cfg, cfg
 from torch_geometric.loader import (
     ClusterLoader,
     DataLoader,
@@ -110,3 +110,34 @@ def create_loader():
                            node_split_name=split_names[i], shuffle=False))
 
     return loaders
+
+
+def load_cfg(cfg, args):
+    r"""
+    Load configurations from file system and command line.
+
+    This patch added the 'parser_drop_eq' option to enable compatibility with
+    the wandb sweep, which specify cli args with equal sign. E.g., specifying
+    'parser_drop_eq' turns 'param1=value1' to 'param1 value1', which can be
+    readily parsed into the given graphgym cli parser.
+
+    Note:
+        The 'parser_drop_eq' MUST be specified as the first argument AFTER the
+        predefined cli arguments, such as '--cfg'. Example:
+        ``python main.py --cfg config.yaml parser_drop_eq param1=value1``
+
+    Args:
+        cfg (CfgNode): Configuration node
+        args (ArgumentParser): Command argument parser
+
+    """
+    cfg.merge_from_file(args.cfg_file)
+    if "parser_drop_eq" in args.opts:  # "param1=value1" -> "param1 value1"
+        opts = []
+        for opt in args.opts:
+            if opt != "parser_drop_eq":
+                opts += opt.split("=", 1)
+    else:
+        opts = args.opts
+    cfg.merge_from_list(opts)
+    assert_cfg(cfg)

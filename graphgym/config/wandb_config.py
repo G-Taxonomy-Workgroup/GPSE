@@ -13,6 +13,12 @@ def set_cfg_wandb(cfg):
     # Use wandb or not
     cfg.wandb.use = False
 
+    # Init for sweep (skip args like name and use those defined by the sweep agent)
+    cfg.wandb.sweep_mode = False
+
+    # Group to use for the sweep
+    cfg.wandb.sweep_group = None
+
     # Wandb entity name, should exist beforehand
     cfg.wandb.entity = "gtransformers"
 

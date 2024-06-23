@@ -8,7 +8,7 @@ date
 hostname
 pwd
 
-module load cuda/11.2/cudnn/8.1 miniconda/3
+module load cuda/11.2/cudnn/8.1 anaconda/3
 conda activate p-pe
 
 cd $SLURM_SUBMIT_DIR

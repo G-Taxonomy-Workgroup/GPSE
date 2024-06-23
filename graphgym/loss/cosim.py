@@ -34,7 +34,7 @@ def mae_cosim_losses(pred, true, batch_idx=None):
     if cfg.model.loss_fun == "mae_cosim_col_sep":
         if batch_idx is None:
             raise ValueError("mae_cosim_col_sep requires batch index as "
-                             "input to disdintuish different graphs.")
+                             "input to distinguish different graphs.")
         mae_loss = F.l1_loss(pred, true)
         cosim_loss = cosim_col_sep(pred, true, batch_idx)
         loss = mae_loss + cosim_loss
