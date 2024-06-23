@@ -32,6 +32,8 @@ from graphgym.encoder.gnn_encoder import gpse_process_batch
 from graphgym.head.identity import IdentityHead
 from graphgym.loader.dataset.aqsol_molecules import AQSOL
 from graphgym.loader.dataset.coco_superpixels import COCOSuperpixels
+from graphgym.loader.dataset.er_dataset import ERDataset
+from graphgym.loader.dataset.spectre import SPECTREDataset
 from graphgym.loader.dataset.malnet_tiny import MalNetTiny
 from graphgym.loader.dataset.open_mol_graph import OpenMolGraph
 from graphgym.loader.dataset.synthetic_wl import SyntheticWL
@@ -45,6 +47,8 @@ from graphgym.transform.transforms import (VirtualNodePatchSingleton,
                                            pre_transform_in_memory, typecast_x)
 from graphgym.utils import get_device
 from graphgym.wl_dataset import ToyWLDataset
+
+import networkx as nx
 
 
 def log_loaded_dataset(dataset, format, name):
@@ -254,6 +258,24 @@ def load_dataset_master(format, name, dataset_dir):
         else:
             raise ValueError(f"Unexpected PyG Dataset identifier: {format}")
 
+    elif format == 'er':
+        def set_xy(data):
+            data.x = torch.ones(data.num_nodes, 1)
+            data.y = 1
+            return data
+        dataset = ERDataset(osp.join(dataset_dir, 'er'))
+        pre_transform_in_memory(dataset, set_xy, show_progress=True)
+
+    elif format == 'SPECTRE':
+        dataset_dir = osp.join(dataset_dir, 'SPECTRE')
+        def set_xy(data):
+            data.x = torch.ones(data.num_nodes, 1)
+            data.y = 1
+            return data
+        dataset = SPECTREDataset(dataset_dir, name)
+        pre_transform_in_memory(dataset, set_xy, show_progress=True)
+
+
     # GraphGym default loader for Pytorch Geometric datasets
     elif format == 'PyG':
         dataset = load_pyg(name, dataset_dir)
@@ -261,6 +283,7 @@ def load_dataset_master(format, name, dataset_dir):
     elif format == 'OGB':
         if name.startswith('ogbg'):
             dataset = preformat_OGB_Graph(dataset_dir, name.replace('_', '-'))
+            dataset = dataset.index_select(range(int(len(dataset)*cfg.dataset.subset_ratio)))
 
         elif name.startswith('ogbn'):
             dataset = preformat_OGB_Node(dataset_dir, name.replace('_', '-'))
@@ -318,7 +341,7 @@ def load_dataset_master(format, name, dataset_dir):
     pe_enabled_list = []
     for key, pecfg in cfg.items():
         if (key.startswith(('posenc_', 'graphenc_')) and pecfg.enable
-                and key != "GPSE"):  # GPSE handeled separately
+                and key != "posenc_GPSE"):  # GPSE handled separately
             pe_name = key.split('_', 1)[1]
             pe_enabled_list.append(pe_name)
             if hasattr(pecfg, 'kernel'):
@@ -391,6 +414,11 @@ def load_dataset_master(format, name, dataset_dir):
     # Precompute GPSE if it is enabled
     if cfg.posenc_GPSE.enable:
         precompute_gpse(cfg, dataset)
+
+    # Precompute GraphLog embeddings if it is enabled
+    if cfg.posenc_GraphLog.enable:
+        from graphgym.encoder.graphlog_encoder import precompute_graphlog
+        precompute_graphlog(cfg, dataset)
 
     logging.info(f"Finished processing data:\n  {dataset.data}")
 
@@ -1102,7 +1130,7 @@ def get_unique_mol_graphs_via_smiles(
     old_size = len(dataset)
     all_smiles = []
     for i in tqdm(dataset, total=old_size,
-                  desc="Extracting unique graphs (ignoring atom/bond types)"):
+                  desc="Extracting unique SMILES (ignoring atom/bond types)"):
         num_nodes = i.num_nodes
         trivial_c_atoms = ["C"] * num_nodes
         adj = torch.sparse_coo_tensor(
@@ -1114,7 +1142,8 @@ def get_unique_mol_graphs_via_smiles(
     unique_smiles = sorted(set(all_smiles))
 
     unique_graphs = []
-    for smiles in unique_smiles:
+    for smiles in tqdm(unique_smiles, total=len(unique_smiles),
+                  desc="Filtering unique graphs based on SMILES"):
         g = from_smiles(smiles)
         if (g.num_nodes > 1) and (g.edge_index.shape[1] > 1):
             delattr(g, "smiles")

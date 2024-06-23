@@ -1,14 +1,14 @@
 ---
-name_tag: GatedGCN+AllPSE
+name_tag: GCN+AllPSE
 out_dir: results
 metric_best: mae
 metric_agg: argmin
 wandb:
   use: false
-  project: GPSE-PCQM4Mv2-subset
+  project: GPSE-peptides-struct
 dataset:
   format: OGB
-  name: PCQM4Mv2-subset
+  name: peptides-structural
   task: graph
   task_type: regression
   transductive: false
@@ -23,7 +23,7 @@ dataset:
   combine_output_pestat: true
 posenc_CombinedPSE:
   enable: true
-  dim_pe: 128
+  dim_pe: 24
   model: Linear
   raw_norm_type: BatchNorm
 posenc_ElstaticPE:
@@ -59,19 +59,21 @@ model:
   graph_pooling: mean
 gnn:
   layers_pre_mp: 1
-  layers_mp: 16
-  layers_post_mp: 1
-  dim_inner: 172
-  batchnorm: true
-  layer_type: resgatedgcnconv
+  layers_mp: 6
+  layers_post_mp: 3
+  dim_inner: 235
+  batchnorm: false
+  layer_type: gcnconv
   act: relu
-  dropout: 0.0
+  dropout: 0.1
+  agg: mean
+  normalize_adj: false
   stage_type: skipsum
 optim:
   clip_grad_norm: true
   optimizer: adamW
-  weight_decay: 1e-6
-  base_lr: 0.0002
-  max_epoch: 100
+  weight_decay: 0.0
+  base_lr: 0.001
+  max_epoch: 250
   scheduler: cosine_with_warmup
   num_warmup_epochs: 5

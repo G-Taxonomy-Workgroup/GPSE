@@ -1,0 +1,54 @@
+---
+name_tag: GPS+none
+out_dir: results
+metric_best: accuracy
+wandb:
+  use: false
+  project: GPSE-MNIST
+dataset:
+  format: PyG-GNNBenchmarkDataset
+  name: MNIST
+  task: graph
+  task_type: classification
+  transductive: false
+  node_encoder: false
+  edge_encoder: true
+  edge_encoder_name: LinearEdge
+  edge_encoder_bn: false
+train:
+  mode: custom
+  batch_size: 16
+  eval_period: 1
+  ckpt_period: 100
+model:
+  type: GPSModel
+  loss_fun: cross_entropy
+  edge_decoding: dot
+  graph_pooling: mean
+gt:  # Hyperparameters optimized for ~100k budget.
+  layer_type: CustomGatedGCN+Transformer
+  layers: 3
+  n_heads: 4
+  dim_hidden: 52  # `gt.dim_hidden` must match `gnn.dim_inner`
+  dropout: 0.0
+  attn_dropout: 0.5
+  layer_norm: false
+  batch_norm: true
+gnn:
+  head: default
+  layers_pre_mp: 1
+  layers_post_mp: 3
+  dim_inner: 52  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: false
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: false
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 1e-4
+  base_lr: 0.001
+  max_epoch: 100
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import List
 
 import numpy as np
+import scipy
 import torch
 import torch.nn.functional as F
 from torch_geometric.utils import (get_laplacian, to_scipy_sparse_matrix,
@@ -22,6 +23,8 @@ PE_TYPES = [
     "RWSE",
     "SignNet",
     "GPSE",
+    "GraphLog",
+    "CombinedPSE",
     "BernoulliRE",
     "NormalRE",
     "NormalFixedRE",
@@ -75,6 +78,8 @@ def _combine_encs(
     out_graph_encs: List[str],
     cfg,
 ):
+    combined_stats = []
+
     for name, pes in zip(["x", "y"], [in_node_encs, out_node_encs]):
         if pes == "none":
             continue
@@ -97,7 +102,12 @@ def _combine_encs(
                 pe = getattr(data, f"pestat_{pe_type}")
             pe_list.append(pe)
 
-        setattr(data, name, torch.nan_to_num(torch.hstack(pe_list)))
+        combined_node_pe = torch.nan_to_num(torch.hstack(pe_list))
+
+        if (name == "y") and cfg.dataset.combine_output_pestat:
+            combined_stats.append(combined_node_pe)
+        else:
+            setattr(data, name, combined_node_pe)
 
     # Graph level encoding targets
     if out_graph_encs != "none":
@@ -112,7 +122,17 @@ def _combine_encs(
                 enc = getattr(data, f"gestat_{enc_type}")
             enc_list.append(enc)
 
-        data.y_graph = torch.nan_to_num(torch.hstack(enc_list))
+        combined_graph_pe = torch.nan_to_num(torch.hstack(enc_list))
+
+        if cfg.dataset.combine_output_pestat:
+            combined_stats.append(combined_graph_pe.repeat(data.x.shape[0], 1))
+        else:
+            data.y_graph = combined_graph_pe
+
+    # Combined pestat
+    if cfg.dataset.combine_output_pestat:
+        data.pestat_CombinedPSE = torch.hstack(combined_stats)
+        cfg.posenc_CombinedPSE._raw_dim = data.pestat_CombinedPSE.shape[1]
 
 
 def compute_posenc_stats(data, pe_types, is_undirected, cfg):
@@ -158,7 +178,10 @@ def compute_posenc_stats(data, pe_types, is_undirected, cfg):
             *get_laplacian(undir_edge_index, normalization=laplacian_norm_type,
                            num_nodes=N)
         )
-        evals, evects = np.linalg.eigh(L.toarray())
+        if cfg.dataset.name.startswith("ogbn"):
+            evals, evects = scipy.sparse.linalg.eigsh(L, k=cfg.posenc_LapPE.eigen.max_freqs, which='SM')
+        else:
+            evals, evects = np.linalg.eigh(L.toarray())
 
         if 'LapPE' in pe_types:
             max_freqs = cfg.posenc_LapPE.eigen.max_freqs
@@ -194,6 +217,7 @@ def compute_posenc_stats(data, pe_types, is_undirected, cfg):
             eigvec_norm=cfg.posenc_SignNet.eigen.eigvec_norm,
             skip_zero_freq=cfg.posenc_SignNet.eigen.skip_zero_freq,
             eigvec_abs=cfg.posenc_SignNet.eigen.eigvec_abs)
+        data.EigVals = data.eigvals_sn
 
     # Random Walks.
     if 'RWSE' in pe_types or 'RWGE' in pe_types:
@@ -283,7 +307,7 @@ def get_lap_decomp_stats(evals, evects, max_freqs, eigvec_norm='L2',
         Tensor (num_nodes, max_freqs, 1) eigenvalues repeated for each node
         Tensor (num_nodes, max_freqs) of eigenvector values per node
     """
-    N = len(evals)  # Number of nodes, including disconnected nodes.
+    N = evects.shape[0]  # Number of nodes, including disconnected nodes.
 
     # Keep up to the maximum desired number of frequencies.
     offset = (abs(evals) < EPS).sum().clip(0, N) if skip_zero_freq else 0
@@ -464,7 +488,7 @@ def get_electrostatic_function_encoding(edge_index, num_nodes):
     evals, evecs = torch.linalg.eigh(L)
     offset = (evals < EPS).sum().item()
     if offset == num_nodes:
-        return torch.zeros(num_nodes, 8, dtype=torch.float32)
+        return torch.zeros(num_nodes, 7, dtype=torch.float32)
 
     electrostatic = evecs[:, offset:] / evals[offset:] @ evecs[:, offset:].T
     electrostatic = electrostatic - electrostatic.diag()

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --partition=long
 #SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:1
-#SBATCH --mem=48G
+#SBATCH --gres=gpu:a100l:1
+#SBATCH --mem=100G
 
 date
 hostname

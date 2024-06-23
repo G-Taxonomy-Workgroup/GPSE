@@ -1,0 +1,72 @@
+---
+name_tag: Transformer+LapPE
+out_dir: results
+metric_best: accuracy
+wandb:
+  use: false
+  project: GPSE-arxiv
+dataset:
+  format: OGB
+  name: ogbn-arxiv
+  task: node
+  task_type: classification
+  transductive: true
+  node_encoder: true
+  node_encoder_name: LapPE
+posenc_LapPE:
+  enable: true
+  eigen:
+    laplacian_norm: none
+    eigvec_norm: L2
+    max_freqs: 4
+    stack_eigval: true
+  model: DeepSet
+  dim_pe: 16
+  layers: 2
+  raw_norm_type: none
+train:
+  mode: custom
+  batch_size: 32
+  eval_period: 1
+  ckpt_period: 100
+  sampler: neighbor
+  neighbor_sizes:
+    - 32
+    - 24
+    - 16
+    - 8
+    - 4
+    - 4
+    - 4
+val:
+  sampler: neighbor
+model:
+  type: GPSModel
+  loss_fun: cross_entropy
+gt:
+  layer_type: None+Transformer  # CustomGatedGCN+Performer
+  layers: 3
+  n_heads: 4
+  dim_hidden: 256  # `gt.dim_hidden` must match `gnn.dim_inner`
+  dropout: 0.5
+  attn_dropout: 0.2
+  layer_norm: false
+  batch_norm: true
+gnn:
+  head: node
+  layers_pre_mp: 1
+  layers_post_mp: 1
+  dim_inner: 256  # `gt.dim_hidden` must match `gnn.dim_inner`
+  batchnorm: true
+  act: relu
+  dropout: 0.0
+  agg: mean
+  normalize_adj: false
+optim:
+  clip_grad_norm: true
+  optimizer: adamW
+  weight_decay: 1e-5
+  base_lr: 0.0001
+  max_epoch: 50
+  scheduler: cosine_with_warmup
+  num_warmup_epochs: 5

@@ -1,43 +1,30 @@
 ---
-name_tag: GIN+LapPE+RWSE
+name_tag: GCN+RWSE
 out_dir: results
 metric_best: mae
 metric_agg: argmin
 wandb:
   use: false
-  project: GPSE-PCQM4Mv2-subset
+  project: GPSE-peptides-struct
 dataset:
   format: OGB
-  name: PCQM4Mv2-subset
+  name: peptides-structural
   task: graph
   task_type: regression
   transductive: false
   node_encoder: true
-  node_encoder_name: Atom+CombinedPSE
+  node_encoder_name: Atom+RWSE
   node_encoder_bn: false
   edge_encoder: true
   edge_encoder_name: Bond
   edge_encoder_bn: false
-  output_node_encoders: LapPE+RWSE
-  output_graph_encoders: none
-  combine_output_pestat: true
-posenc_CombinedPSE:
-  enable: true
-  dim_pe: 48
-  model: Linear
-  raw_norm_type: BatchNorm
-posenc_LapPE:
-  enable: true
-  eigen:
-    laplacian_norm: sym
-    eigvec_norm: L2
-    max_freqs: 4
-    skip_zero_freq: true
-    eigvec_abs: true
 posenc_RWSE:
   enable: true
   kernel:
     times_func: range(2,22)  # if no self-loop, then RWSE1 will be all zeros
+  model: Linear
+  dim_pe: 32
+  raw_norm_type: BatchNorm
 train:
   mode: custom
   batch_size: 256
@@ -49,20 +36,21 @@ model:
   graph_pooling: mean
 gnn:
   layers_pre_mp: 1
-  layers_mp: 16
-  layers_post_mp: 1
-  dim_inner: 124
-  batchnorm: true
-  layer_type: ginconv
+  layers_mp: 6
+  layers_post_mp: 3
+  dim_inner: 235
+  batchnorm: false
+  layer_type: gcnconv
   act: relu
-  dropout: 0.0
-  agg: add
+  dropout: 0.1
+  agg: mean
+  normalize_adj: false
   stage_type: skipsum
 optim:
   clip_grad_norm: true
   optimizer: adamW
-  weight_decay: 1e-6
-  base_lr: 0.0002
-  max_epoch: 100
+  weight_decay: 0.0
+  base_lr: 0.001
+  max_epoch: 250
   scheduler: cosine_with_warmup
   num_warmup_epochs: 5

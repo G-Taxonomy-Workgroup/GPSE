@@ -6,6 +6,8 @@ from torch_geometric.graphgym.register import register_node_encoder
 from graphgym.encoder.ast_encoder import ASTNodeEncoder
 from graphgym.encoder.equivstable_laplace_pos_encoder import EquivStableLapPENodeEncoder
 from graphgym.encoder.gnn_encoder import GNNNodeEncoder
+from graphgym.encoder.graphlog_encoder import GraphLogNodeEncoder
+from graphgym.encoder.combined_encoder import CombinedPSENodeEncoder
 from graphgym.encoder.kernel_pos_encoder import RWSENodeEncoder, \
     HKdiagSENodeEncoder, ElstaticPENodeEncoder
 from graphgym.encoder.laplace_pos_encoder import LapPENodeEncoder
@@ -117,6 +119,8 @@ pe_encs = {'LapPE': LapPENodeEncoder,
            'SignNet': SignNetNodeEncoder,
            'EquivStableLapPE': EquivStableLapPENodeEncoder,
            'GPSE': GNNNodeEncoder,
+           'GraphLog': GraphLogNodeEncoder,
+           'CombinedPSE': CombinedPSENodeEncoder,
            "BernoulliRE": BernoulliRENodeEncoder,
            "NormalRE": NormalRENodeEncoder,
            "NormalFixedRE": NormalFixedRENodeEncoder,

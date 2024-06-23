@@ -14,6 +14,9 @@ def set_cfg_posenc(cfg):
     cfg.posenc_ElstaticPE = CN()
     cfg.posenc_EquivStableLapPE = CN()
     cfg.posenc_GPSE = CN()
+    cfg.posenc_GraphLog = CN()
+    # NOTE: the following requires dataset.combine_output_pestat to be True
+    cfg.posenc_CombinedPSE = CN()
 
     # Argument group for each Random Encoding class.
     cfg.randenc_FixedSE = CN()
@@ -34,8 +37,9 @@ def set_cfg_posenc(cfg):
     cfg.graphenc_RWGE.enable = False
 
     # Common arguments to all PE types.
-    for name in ['posenc_LapPE', 'posenc_SignNet', 'posenc_RWSE',
-                 'posenc_HKdiagSE', 'posenc_ElstaticPE', 'posenc_GPSE']:
+    for name in ['posenc_LapPE', 'posenc_SignNet', 'posenc_RWSE', 'posenc_GPSE',
+                 'posenc_HKdiagSE', 'posenc_ElstaticPE', 'posenc_GraphLog',
+                 'posenc_CombinedPSE']:
         pecfg = getattr(cfg, name)
 
         # Use extended positional encodings
@@ -95,6 +99,11 @@ def set_cfg_posenc(cfg):
     # Multi MLP head hidden dimension. If None, set as the same as gnn.dim_inner
     cfg.gnn.multi_head_dim_inner = None
     cfg.posenc_GPSE.gnn_cfg = CN(cfg.gnn.copy())
+
+    cfg.posenc_GraphLog.model_dir = "pretrained_models/graphlog.pth"
+
+    # To be set at runtime based on the PSE to be combined
+    cfg.posenc_CombinedPSE._raw_dim = None
 
     # Config for Laplacian Eigen-decomposition for PEs that use it.
     for name in ['posenc_LapPE', 'posenc_SignNet', 'posenc_EquivStableLapPE']:
