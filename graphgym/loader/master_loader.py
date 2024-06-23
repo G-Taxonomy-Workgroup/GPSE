@@ -392,6 +392,11 @@ def load_dataset_master(format, name, dataset_dir):
     if cfg.posenc_GPSE.enable:
         precompute_gpse(cfg, dataset)
 
+    # Precompute GraphLog embeddings if it is enabled
+    if cfg.posenc_GraphLog.enable:
+        from graphgym.encoder.graphlog_encoder import precompute_graphlog
+        precompute_graphlog(cfg, dataset)
+
     logging.info(f"Finished processing data:\n  {dataset.data}")
 
     return dataset

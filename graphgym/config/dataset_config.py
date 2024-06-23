@@ -12,6 +12,10 @@ def dataset_cfg(cfg):
     cfg.dataset.output_node_encoders = "none"
     cfg.dataset.output_graph_encoders = "none"
 
+    # If set to True, then combine the output encoders to
+    # pestat_{output_node_encoders}+{output_graph_encoders}
+    cfg.dataset.combine_output_pestat = False
+
     # The number of node types to expect in TypeDictNodeEncoder.
     cfg.dataset.node_encoder_num_types = 0
 
