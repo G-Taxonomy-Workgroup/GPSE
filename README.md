@@ -2,11 +2,19 @@
 
 #### [Semih Cantürk*](https://semihcanturk.github.io), [Renming Liu*](https://github.com/RemyLau), Olivier Lapointe-Gagné, Vincent Létourneau, Guy Wolf, Dominique Beaini, Ladislav Rampášek
 
-_Accepted at ICML 2024_
+[_Accepted at ICML 2024_](https://proceedings.mlr.press/v235/canturk24a.html)
 
 [![arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)](https://arxiv.org/abs/2307.07107)
 
 ![img](GPSE.png)
+
+## PyG Integration
+Downstream GPSE usage is currently being integrated into PyG.
+You can follow the progress [in this issue](https://github.com/pyg-team/pytorch_geometric/issues/8310) and [this PR](https://github.com/pyg-team/pytorch_geometric/pull/9018). If you do not want to wait for the PR to be merged, you can also install PyG through the GPSE-implemented fork with: 
+```
+pip install git+https://github.com/semihcanturk/pytorch_geometric.git
+```
+
 
 ## Installation
 
@@ -107,12 +115,19 @@ python viz/wl_test.py --cfg configs/wl_bench/toywl-GPS+GPSE_v9.yaml
 If you find this work useful, please cite our paper
 
 ```bibtex
-@misc{liu2023graph,
-      title={Graph Positional and Structural Encoder}, 
-      author={Renming Liu and Semih Cantürk and Olivier Lapointe-Gagné and Vincent Létourneau and Guy Wolf and Dominique Beaini and Ladislav Rampášek},
-      year={2023},
-      eprint={2307.07107},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@InProceedings{pmlr-v235-canturk24a,
+  title = 	 {Graph Positional and Structural Encoder},
+  author =       {Cant\"{u}rk, Semih and Liu, Renming and Lapointe-Gagn\'{e}, Olivier and L\'{e}tourneau, Vincent and Wolf, Guy and Beaini, Dominique and Ramp\'{a}\v{s}ek, Ladislav},
+  booktitle = 	 {Proceedings of the 41st International Conference on Machine Learning},
+  pages = 	 {5533--5566},
+  year = 	 {2024},
+  editor = 	 {Salakhutdinov, Ruslan and Kolter, Zico and Heller, Katherine and Weller, Adrian and Oliver, Nuria and Scarlett, Jonathan and Berkenkamp, Felix},
+  volume = 	 {235},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {21--27 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v235/main/assets/canturk24a/canturk24a.pdf},
+  url = 	 {https://proceedings.mlr.press/v235/canturk24a.html},
+  abstract = 	 {Positional and structural encodings (PSE) enable better identifiability of nodes within a graph, rendering them essential tools for empowering modern GNNs, and in particular graph Transformers. However, designing PSEs that work optimally for all graph prediction tasks is a challenging and unsolved problem. Here, we present the Graph Positional and Structural Encoder (GPSE), the first-ever graph encoder designed to capture rich PSE representations for augmenting any GNN. GPSE learns an efficient common latent representation for multiple PSEs, and is highly transferable: The encoder trained on a particular graph dataset can be used effectively on datasets drawn from markedly different distributions and modalities. We show that across a wide range of benchmarks, GPSE-enhanced models can significantly outperform those that employ explicitly computed PSEs, and at least match their performance in others. Our results pave the way for the development of foundational pre-trained graph encoders for extracting positional and structural information, and highlight their potential as a more powerful and efficient alternative to explicitly computed PSEs and existing self-supervised pre-training approaches. Our framework and pre-trained models are publicly available at https://github.com/G-Taxonomy-Workgroup/GPSE. For convenience, GPSE has also been integrated into the PyG library to facilitate downstream applications.}
 }
 ```
