@@ -4,7 +4,7 @@
 
 [_Accepted at ICML 2024_](https://proceedings.mlr.press/v235/canturk24a.html)
 
-[![arXiv](https://img.shields.io/badge/arXiv-1234.56789-b31b1b.svg)](https://arxiv.org/abs/2307.07107)
+[![arXiv](https://img.shields.io/badge/arXiv-2307.07107-b31b1b.svg)](https://arxiv.org/abs/2307.07107)
 
 ![img](GPSE.png)
 
