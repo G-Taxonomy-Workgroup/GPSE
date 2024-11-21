@@ -112,7 +112,7 @@ python viz/wl_test.py --cfg configs/wl_bench/toywl-GPS+GPSE_v9.yaml
 
 ## Citation
 
-If you find this work useful, please cite our paper
+If you find this work useful, please cite our paper:
 
 ```bibtex
 @InProceedings{pmlr-v235-canturk24a,
