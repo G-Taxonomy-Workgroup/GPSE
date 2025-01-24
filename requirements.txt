@@ -14,4 +14,4 @@ yacs==0.1.8
 # For plotting
 matplotlib==3.7.1
 seaborn==0.12.2
-# For download pre-trained models
+# For downloading pre-trained models

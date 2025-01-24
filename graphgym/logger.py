@@ -8,7 +8,7 @@ import torch
 from scipy.stats import stats
 from sklearn.metrics import accuracy_score, precision_score, recall_score, \
     f1_score, roc_auc_score, mean_absolute_error, mean_squared_error, \
-    confusion_matrix
+    confusion_matrix, root_mean_squared_error
 from torch_geometric.graphgym import get_current_gpu_usage
 from torch_geometric.graphgym.config import cfg
 from torch_geometric.graphgym.logger import infer_task, Logger
@@ -210,7 +210,7 @@ class CustomLogger(Logger):
         res = {
             'mae': mean_absolute_error(true, pred),
             'mse': mean_squared_error(true, pred),
-            'rmse': mean_squared_error(true, pred, squared=False),
+            'rmse': root_mean_squared_error(true, pred),
         }
         if (cfg.gnn.head.startswith("inductive_node")
                 or cfg.gnn.head.startswith("inductive_hybrid")):
@@ -464,7 +464,7 @@ def pearsonr_split(y_true, y_pred, batch_idx):
         start, end = indptr[i:i+2]
         raw_scores[i] = pearsonr(y_true[start:end], y_pred[start:end])
     for i in range(num_feat):
-        scores[i] = np.nanmean(raw_scores[i])
+        scores[i] = np.nanmean(raw_scores[:, i])
     return scores
 
 
@@ -503,7 +503,7 @@ def r2_split(y_true, y_pred, batch_idx):
         start, end = indptr[i:i+2]
         raw_scores[i] = r2(y_true[start:end], y_pred[start:end])
     for i in range(num_feat):
-        scores[i] = np.nanmean(raw_scores[i])
+        scores[i] = np.nanmean(raw_scores[:, i])
     return scores
 
 
